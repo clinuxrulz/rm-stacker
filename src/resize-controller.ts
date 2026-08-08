@@ -16,9 +16,20 @@ export function createResizeController(params: {
 }): {
   cursor: Accessor<string | undefined>,
 } {
+  let mouseWorldPos = createMemo(() => {
+    let mousePos = params.mousePos();
+    if (mousePos === undefined) {
+      return undefined;
+    }
+    return params.screenToWorld(mousePos);
+  });
   let edgeUnderMouse = createMemo(() => {
     let mousePos = params.mousePos();
     if (mousePos === undefined) {
+      return;
+    }
+    let mouseWorldPos2 = mouseWorldPos();
+    if (mouseWorldPos2 === undefined) {
       return;
     }
     let coordinates = params.coordinates();
@@ -36,7 +47,7 @@ export function createResizeController(params: {
       // test west side
       {
         pt.setX(coordinate.x);
-        pt.setY(Math.max(coordinate.y, Math.min(coordinate.y + mousePos.y)));
+        pt.setY(Math.max(coordinate.y, Math.min(coordinate.y + mouseWorldPos2.y)));
         params.worldToScreen(pt, pt2);
         let dist = pt2.distanceToSquared(mousePos);
         if (dist <= SNAP_DIST_SQUARED) {
@@ -52,7 +63,7 @@ export function createResizeController(params: {
       // test east side
       {
         pt.setX(coordinate.x + sides[sideKind].width);
-        pt.setY(Math.max(coordinate.y, Math.min(coordinate.y + mousePos.y)));
+        pt.setY(Math.max(coordinate.y, Math.min(coordinate.y + mouseWorldPos2.y)));
         params.worldToScreen(pt, pt2);
         let dist = pt2.distanceToSquared(mousePos);
         if (dist <= SNAP_DIST_SQUARED) {
@@ -67,7 +78,7 @@ export function createResizeController(params: {
       }
       // test north side
       {
-        pt.setX(Math.max(coordinate.x, Math.min(coordinate.x + mousePos.x)));
+        pt.setX(Math.max(coordinate.x, Math.min(coordinate.x + mouseWorldPos2.x)));
         pt.setY(coordinate.y);
         params.worldToScreen(pt, pt2);
         let dist = pt2.distanceToSquared(mousePos);
@@ -83,7 +94,7 @@ export function createResizeController(params: {
       }
       // test south side
       {
-        pt.setX(Math.max(coordinate.x, Math.min(coordinate.x + mousePos.x)));
+        pt.setX(Math.max(coordinate.x, Math.min(coordinate.x + mouseWorldPos2.x)));
         pt.setY(coordinate.y + sides[sideKind].height);
         params.worldToScreen(pt, pt2);
         let dist = pt2.distanceToSquared(mousePos);
