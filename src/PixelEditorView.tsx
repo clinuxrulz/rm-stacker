@@ -19,6 +19,7 @@ import { createInitialSides } from "./stacker-store";
 import { computeGuideMasks } from "./voxel-solver";
 import { load, save } from "./load-save";
 import { fileOpen, fileSave, FileWithHandle } from "browser-fs-access";
+import { createResizeController } from "./resize-controller";
 
 interface ImageCanvasCacheData {
   canvas: HTMLCanvasElement;
@@ -68,6 +69,7 @@ const createPixelEditorController = ({
   canvas,
   mode,
   selectedColour,
+  sides,
   coordinates,
   pushUndo,
   doCommand,
@@ -75,6 +77,7 @@ const createPixelEditorController = ({
   canvas: Accessor<HTMLCanvasElement | undefined>;
   mode: Accessor<ModeKind>;
   selectedColour: Accessor<string | undefined>;
+  sides: Accessor<Sides>;
   coordinates: Accessor<Coordinates>;
   pushUndo: (reverseCommand: Command, description: string) => void;
   doCommand: (command: Command, pushUndo?: boolean, description?: string) => Command;
@@ -112,6 +115,13 @@ const createPixelEditorController = ({
     return out;
   };
 
+  const worldToScreen = (pt: THREE.Vector2, out = new THREE.Vector2()): THREE.Vector2 => {
+    out.copy(pt);
+    out.sub(latest(pan));
+    out.multiplyScalar(latest(scale));
+    return out;
+  };
+
   const mouseWorldPos = createMemo<THREE.Vector2 | undefined>(previous => {
     if (previous && mode() === "Idle") {
       return previous;
@@ -131,6 +141,14 @@ const createPixelEditorController = ({
     worldPos.y = Math.round(worldPos.y - 0.5);
 
     return worldPos;
+  });
+
+  let resizeController = createResizeController({
+    mousePos,
+    screenToWorld,
+    worldToScreen,
+    sides,
+    coordinates,
   });
 
   let undoCommandsReversed: Command[] = [];
@@ -235,6 +253,7 @@ const createPixelEditorController = ({
         ctx.fillRect(pixelPos.x, pixelPos.y, 1.0, 1.0);
       };
     },
+    cursor: resizeController.cursor,
     onPointerDown(e: PointerEvent) {
       setPointerids(set => set.add(e.pointerId));
       panScaleControl.onPointerDown(e);
@@ -291,6 +310,7 @@ const PixelEditorView: Component<{ coordinates: Accessor<Coordinates> }> = props
   const coordinates = props.coordinates;
 
   const controller = createPixelEditorController({
+    sides: () => store.sides,
     coordinates,
     mode,
     canvas,
@@ -509,6 +529,7 @@ const PixelEditorView: Component<{ coordinates: Accessor<Coordinates> }> = props
           width: "100%",
           height: "100%",
           "touch-action": "none",
+          cursor: controller.cursor(),
         }}
         onPointerDown={controller.onPointerDown}
         onPointerUp={controller.onPointerUp}
