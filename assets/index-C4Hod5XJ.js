@@ -66,7 +66,7 @@ void main(void) {
       if (!(all(greaterThanEqual(vec3(_rmsl_18), vec3(0.0))) && all(lessThan(vec3(_rmsl_18), uVoxelCount)))) {
         break;
       }
-      if ((texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).a & 192u) != 0u) {
+      if ((texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).a & 192u) != 0u) {
         _rmsl_23 = true;
         break;
       }
@@ -78,27 +78,27 @@ void main(void) {
       uint _rmsl_25 = 0u;
       if (_rmsl_22.x != 0.0) {
         if (_rmsl_19.x > 0) {
-          _rmsl_25 = (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).g & 124u) >> 2u;
+          _rmsl_25 = (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).g & 124u) >> 2u;
         }
         else {
-          _rmsl_25 = (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).g & 128u) >> 7u | (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).b & 15u) << 1u;
+          _rmsl_25 = (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).g & 128u) >> 7u | (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).b & 15u) << 1u;
         }
       }
       else {
         if (_rmsl_22.y != 0.0) {
           if (_rmsl_19.y > 0) {
-            _rmsl_25 = (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).a & 62u) >> 1u;
+            _rmsl_25 = (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).a & 62u) >> 1u;
           }
           else {
-            _rmsl_25 = (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).b & 240u) >> 4u | (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).a & 1u) << 4u;
+            _rmsl_25 = (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).b & 240u) >> 4u | (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).a & 1u) << 4u;
           }
         }
         else {
           if (_rmsl_19.z > 0) {
-            _rmsl_25 = texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).r & 31u;
+            _rmsl_25 = texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).r & 31u;
           }
           else {
-            _rmsl_25 = (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).r & 224u) >> 5u | (texelFetch(uVoxels, ivec3(vec3(_rmsl_18)), 0).g & 3u) << 3u;
+            _rmsl_25 = (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).r & 224u) >> 5u | (texelFetch(uVoxels, ivec3(uvec3(_rmsl_18)), 0).g & 3u) << 3u;
           }
         }
       }
