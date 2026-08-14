@@ -31,31 +31,31 @@ void main(void) {
   vec3 _rmsl_0 = uWorldToModel * uCameraPosition;
   vec3 _rmsl_1 = uWorldToModel * normalize(vec3((((_rmsl_v0 * uResolution) * 2.0 - uResolution) / uResolution.y).x, (((_rmsl_v0 * uResolution) * 2.0 - uResolution) / uResolution.y).y, -2.0));
   vec4 _rmsl_2 = vec4(0.0, 0.0, 0.0, 0.0);
-  vec3 _rmsl_3 = uDimensions * -0.5;
-  vec3 _rmsl_4 = uDimensions * 0.5;
-  vec3 _rmsl_5 = (vec3(1.0) / _rmsl_1) * (_rmsl_3 - _rmsl_0);
+  vec3 _rmsl_3 = uDimensions / uVoxelCount;
+  vec3 _rmsl_4 = uDimensions * -0.5 - _rmsl_3;
+  vec3 _rmsl_5 = uDimensions * 0.5 + _rmsl_3;
   vec3 _rmsl_6 = (vec3(1.0) / _rmsl_1) * (_rmsl_4 - _rmsl_0);
-  vec3 _rmsl_7 = ((_rmsl_5 + _rmsl_6) - abs(_rmsl_5 - _rmsl_6)) * 0.5;
-  vec3 _rmsl_8 = ((_rmsl_5 + _rmsl_6) + abs(_rmsl_5 - _rmsl_6)) * 0.5;
-  vec2 _rmsl_9 = ((vec2(_rmsl_7.x, _rmsl_7.x) + vec2(_rmsl_7.y, _rmsl_7.z)) + abs(vec2(_rmsl_7.x, _rmsl_7.x) - vec2(_rmsl_7.y, _rmsl_7.z))) * 0.5;
-  float _rmsl_10 = max(_rmsl_9.x, _rmsl_9.y);
-  vec2 _rmsl_11 = ((vec2(_rmsl_8.x, _rmsl_8.x) + vec2(_rmsl_8.y, _rmsl_8.z)) - abs(vec2(_rmsl_8.x, _rmsl_8.x) - vec2(_rmsl_8.y, _rmsl_8.z))) * 0.5;
-  float _rmsl_12 = min(_rmsl_11.x, _rmsl_11.y);
-  if (_rmsl_10 <= _rmsl_12) {
-    vec3 _rmsl_13 = uDimensions / uVoxelCount;
-    vec3 _rmsl_14 = _rmsl_1 / _rmsl_13;
-    vec3 _rmsl_15 = _rmsl_0 + _rmsl_1 * _rmsl_10;
-    vec3 _rmsl_16 = (_rmsl_15 + uDimensions * 0.5) / _rmsl_13 + _rmsl_14 * 0.001;
+  vec3 _rmsl_7 = (vec3(1.0) / _rmsl_1) * (_rmsl_5 - _rmsl_0);
+  vec3 _rmsl_8 = ((_rmsl_6 + _rmsl_7) - abs(_rmsl_6 - _rmsl_7)) * 0.5;
+  vec3 _rmsl_9 = ((_rmsl_6 + _rmsl_7) + abs(_rmsl_6 - _rmsl_7)) * 0.5;
+  vec2 _rmsl_10 = ((vec2(_rmsl_8.x, _rmsl_8.x) + vec2(_rmsl_8.y, _rmsl_8.z)) + abs(vec2(_rmsl_8.x, _rmsl_8.x) - vec2(_rmsl_8.y, _rmsl_8.z))) * 0.5;
+  float _rmsl_11 = max(_rmsl_10.x, _rmsl_10.y);
+  vec2 _rmsl_12 = ((vec2(_rmsl_9.x, _rmsl_9.x) + vec2(_rmsl_9.y, _rmsl_9.z)) - abs(vec2(_rmsl_9.x, _rmsl_9.x) - vec2(_rmsl_9.y, _rmsl_9.z))) * 0.5;
+  float _rmsl_13 = min(_rmsl_12.x, _rmsl_12.y);
+  if (_rmsl_11 <= _rmsl_13) {
+    vec3 _rmsl_14 = _rmsl_1 / _rmsl_3;
+    vec3 _rmsl_15 = _rmsl_0 + _rmsl_1 * _rmsl_11;
+    vec3 _rmsl_16 = (_rmsl_15 + uDimensions * 0.5) / _rmsl_3 + _rmsl_14 * 0.001;
     ivec3 _rmsl_17 = ivec3(floor(_rmsl_16));
     ivec3 _rmsl_18 = ivec3(sign(_rmsl_1));
     vec3 _rmsl_19 = vec3(1.0) / max(abs(_rmsl_14), vec3(0.000001));
     vec3 _rmsl_20 = (vec3(_rmsl_18) * (vec3(_rmsl_17) - _rmsl_16) + (vec3(_rmsl_18) * 0.5 + 0.5)) * _rmsl_19;
     vec3 _rmsl_21 = vec3(0.0);
-    if (_rmsl_7.x == _rmsl_10) {
+    if (_rmsl_8.x == _rmsl_11) {
       _rmsl_21 = vec3(1.0, 0.0, 0.0);
     }
     else {
-      if (_rmsl_7.y == _rmsl_10) {
+      if (_rmsl_8.y == _rmsl_11) {
         _rmsl_21 = vec3(0.0, 1.0, 0.0);
       }
       else {
@@ -64,12 +64,14 @@ void main(void) {
     }
     bool _rmsl_22 = false;
     for (int _rmsl_23 = 0; _rmsl_23 < int(max(max(uVoxelCount.x, uVoxelCount.y), uVoxelCount.z) * 3.0 + 8.0); _rmsl_23 = _rmsl_23 + 1) {
-      if (!(all(greaterThanEqual(vec3(_rmsl_17), vec3(0.0))) && all(lessThan(vec3(_rmsl_17), uVoxelCount)))) {
+      if (!(all(greaterThanEqual(vec3(_rmsl_17), vec3(-2.0))) && all(lessThan(vec3(_rmsl_17), uVoxelCount + vec3(2.0))))) {
         break;
       }
-      if ((texelFetch(uVoxels, ivec3(uvec3(_rmsl_17)), 0).a & 192u) != 0u) {
-        _rmsl_22 = true;
-        break;
+      if (all(greaterThanEqual(vec3(_rmsl_17), vec3(0.0))) && all(lessThan(vec3(_rmsl_17), uVoxelCount))) {
+        if ((texelFetch(uVoxels, ivec3(uvec3(_rmsl_17)), 0).a & 192u) != 0u) {
+          _rmsl_22 = true;
+          break;
+        }
       }
       _rmsl_21 = vec3(lessThanEqual(_rmsl_20, vec3(min(_rmsl_20.y, _rmsl_20.z), min(_rmsl_20.z, _rmsl_20.x), min(_rmsl_20.x, _rmsl_20.y))));
       _rmsl_20 = _rmsl_20 + _rmsl_21 * _rmsl_19;
